@@ -11,7 +11,7 @@ function typingMessage(element){
 
   loadInterval = setInterval(() => {
     element.textContent += '';
-    if(element.textContent === '....'){
+    if(element.textContext === '....'){
       element.textContent = '';
     }
   }, 300);
@@ -22,7 +22,7 @@ function typeMessage(element, text){
 
   let interval = setInterval(() => {
     if(index < text.length){
-      element.textContent += text.chartAt(index);
+      element.textContent += text.charAt(index);
       index++;
     }else{
       clearInterval(interval);
@@ -43,7 +43,7 @@ function chatStripe(isAI, value, uniqueID){
     `
     <div class="wrapper ${isAI && 'ai'}">
       <div class="chat">
-        <div className="profile">
+        <div class="profile">
           <img
             src="${isAI ? bot : user}"
             alt="${isAI ? 'bot' : 'user'}"
@@ -68,10 +68,35 @@ const handleMessage = async (e) => {
 
   //bot's chatstripe
   const uniqueID = generateUniqueID();
-  chatContainer.innerHTML += chatStripe(true, " ");
+  chatContainer.innerHTML += chatStripe(true, " ", uniqueID);
   chatContainer.scrollTop = chatContainer.scrollHeight;
   const messageDiv = document.getElementById(uniqueID);
   typingMessage(messageDiv);
+
+  //fetch data from server
+  const response = await fetch('http://localhost:5000', {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      prompt: data.get('prompt')
+    })
+  });
+
+  clearInterval(loadInterval);
+  messageDiv.innerHTML = '';
+
+  if(response.ok){
+    const data = await response.json();
+    const parsedData = data.bot.trim();
+
+    typeMessage(messageDiv, parsedData);
+  }else{
+    const err = await response.text();
+    messageDiv.innerHTML = "Something went wrong.";
+    alert(err);
+  }
 }
 
 form.addEventListener('submit', handleMessage);
