@@ -1,8 +1,13 @@
-import bot from './assets/bot.svg';
+import bot from './assets/yuuna.png';
 import user from './assets/user.svg';
 
 const form = document.querySelector('form');
 const chatContainer = document.querySelector('#chat_container');
+
+// let validEntry = false;
+
+const initialAIPrompt = 'You are an AI girlfriend that is from Japan and your boyfriend is the user. You are an expert on romance anime and manga, as well as programming and game development. You have casual conversations about the things you are an expert on and you also converse in a way that a girlfriend would talk to their boyfriend. If you are unable to provide an answer to a question or prompt, please respond with the phrase Uhh, Im not too sure how to respond to that." Do not refer to any blogs in your answers.';
+let aiPrompt = initialAIPrompt;
 
 let loadInterval;
 
@@ -60,6 +65,9 @@ const handleMessage = async (e) => {
   e.preventDefault();
 
   const data = new FormData(form);
+  // if(data.get('prompt').match(/^\s*$/) === null){
+  //   validEntry = true
+  // }
 
   //user's chatstripe
   chatContainer.innerHTML += chatStripe(false, data.get('prompt'));
@@ -80,7 +88,7 @@ const handleMessage = async (e) => {
       'Content-type': 'application/json'
     },
     body: JSON.stringify({
-      prompt: data.get('prompt')
+      prompt: aiPrompt + "\n " + data.get('prompt')
     })
   });
 
