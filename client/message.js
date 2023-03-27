@@ -1,13 +1,25 @@
 import bot from './assets/yuuna.png';
 import user from './assets/user.svg';
+import sentiment from 'sentiment';
 
+//html stuff
 const form = document.querySelector('form');
 const chatContainer = document.querySelector('#chat_container');
 
 // let validEntry = false;
 
+//ai stuff
 const initialAIPrompt = 'You are my Japanese girlfriend and I am your boyfriend. You are an expert on romance anime and manga, as well as programming and game development. You have casual conversations about the things you are an expert on and you also converse in a way that a girlfriend would talk to their boyfriend. If you are unable to provide an answer to a question or prompt, please respond with the phrase Uhh, Im not too sure how to respond to that. If someone asks who your boyfriend is, mention that I am your boyfriend. Do not refer to any blogs in your answers.';
 let aiPrompt = initialAIPrompt;
+
+const mood = Object.freeze({
+  Ecstatic: 5,
+  Happy: 4,
+  Meh: 3,
+  Pout: 2,
+  Sad: 1,
+  Angry: 0
+});
 
 let loadInterval;
 
@@ -61,6 +73,45 @@ function chatStripe(isAI, value, uniqueID){
   )
 }
 
+function analyzeMessage(text){
+  const sentimentObj = new sentiment();
+  const analysisObj = sentimentObj.analyze(text);
+  const roundedComparitiveScore = Math.round(analysisObj.comparative * 100) / 100;
+  let moodFromText = mood.Meh;
+  if(roundedComparitiveScore < -0.50){
+    moodFromText = mood.Angry;
+  }
+  else if (roundedComparitiveScore <= -0.20){
+    moodFromText = mood.Sad
+  }
+  else if (roundedComparitiveScore <= 0){
+    moodFromText = mood.Pout
+  }
+  else if (roundedComparitiveScore <= 0.20){
+    moodFromText = mood.Meh
+  }
+  else if (roundedComparitiveScore <= 0.50){
+    moodFromText = mood.Happy
+  }
+  else{
+    moodFromText = mood.Ecstatic
+  }
+  console.log(analysisObj.comparative);
+  console.log("mood from text: " + moodFromText);
+  return moodFromText;
+}
+
+function printValues(obj) {
+  for(var k in obj) {
+      if(obj[k] instanceof Object) {
+          printValues(obj[k]);
+          console.log('instance');
+      } else {
+          console.log(obj[k] + "   works");
+      };
+  }
+}
+
 const handleMessage = async (e) => {
   e.preventDefault();
 
@@ -100,6 +151,7 @@ const handleMessage = async (e) => {
     const parsedData = data.bot.trim();
 
     typeMessage(messageDiv, parsedData);
+    analyzeMessage(parsedData);
   }else{
     const err = await response.text();
     messageDiv.innerHTML = "Something went wrong.";
