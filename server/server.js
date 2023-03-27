@@ -2,13 +2,18 @@ import express from 'express';
 import * as dotenv from 'dotenv';
 import cors from 'cors';
 import { Configuration, OpenAIApi } from 'openai';
+import sentiment from 'sentiment';
+import translatte from 'translatte';
 
 dotenv.config();
 
+//sentiment stuff
+const sentimentObj = new sentiment();
+
+//open ai stuff
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
-
 const openai = new OpenAIApi(configuration);
 
 const app = express();
@@ -35,8 +40,12 @@ app.post('/', async (req, res) => {
             stop: ["\''\''\''"],
         });
         console.log(prompt + "\n" + response.data.choices[0].text);
+        const analysisObj = sentimentObj.analyze(response.data.choices[0].text.trim());
+        const translation = await translatte(response.data.choices[0].text.trim(), {to: 'ja'});
         res.status(200).send({
-           bot: response.data.choices[0].text 
+           bot: response.data.choices[0].text,
+           com: analysisObj.comparative,
+           jap: translation.text
         })
     } catch (error) {
         console.log(error);

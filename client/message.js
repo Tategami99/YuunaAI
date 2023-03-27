@@ -1,6 +1,5 @@
 import bot from './assets/yuuna.png';
 import user from './assets/user.svg';
-import sentiment from 'sentiment';
 
 //html stuff
 const form = document.querySelector('form');
@@ -75,10 +74,8 @@ function chatStripe(isAI, value, uniqueID){
   )
 }
 
-function analyzeMessage(text){
-  const sentimentObj = new sentiment();
-  const analysisObj = sentimentObj.analyze(text);
-  const roundedComparitiveScore = Math.round(analysisObj.comparative * 100) / 100;
+function analyzeMessage(com){
+  const roundedComparitiveScore = Math.round(com * 100) / 100;
   let moodFromText = mood.Meh;
   if(roundedComparitiveScore < -0.50){
     moodFromText = mood.Angry;
@@ -98,7 +95,7 @@ function analyzeMessage(text){
   else{
     moodFromText = mood.Ecstatic
   }
-  console.log(analysisObj.comparative);
+  console.log(com);
   console.log("mood from text: " + moodFromText);
   return moodFromText;
 }
@@ -143,10 +140,12 @@ const handleMessage = async (e) => {
 
   if(response.ok){
     const data = await response.json();
-    const parsedData = data.bot.trim();
+    const parsedMessage = data.bot.trim();
+    const parsedCom = data.com;
 
-    typeMessage(messageDiv, parsedData);
-    aiMood = analyzeMessage(parsedData);
+    console.log(data.jap);
+    typeMessage(messageDiv, parsedMessage);
+    aiMood = analyzeMessage(parsedCom);
     changeImage(aiMood);
   }else{
     const err = await response.text();
