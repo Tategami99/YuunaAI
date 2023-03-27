@@ -9,6 +9,12 @@ const subtitleDiv = document.getElementById('subtitles');
 
 // let validEntry = false;
 
+//synthesis stuff
+const yuunaVoice = new SpeechSynthesisUtterance();
+yuunaVoice.volume = 1; //0 to 1
+yuunaVoice.rate = 1.75; //0.1 to 10
+yuunaVoice.pitch = 2; //0 to 2
+
 const mood = Object.freeze({
   Ecstatic: 'Ecstatic',
   Happy: 'Happy',
@@ -105,6 +111,15 @@ function changeSubtitles(text){
   subtitleDiv.innerHTML = text;
 }
 
+function speak(text){
+  yuunaVoice.text = text;
+  // const voice = speaks[5];
+  // console.log(`Voice: ${voice.name} and Lang: ${voice.lang}`)
+  yuunaVoice.voiceURI = 'Kyoko';
+  yuunaVoice.lang = 'ja-JP';
+  speechSynthesis.speak(yuunaVoice);
+}
+
 const handleMessage = async (e) => {
   e.preventDefault();
 
@@ -148,6 +163,7 @@ const handleMessage = async (e) => {
     typeMessage(messageDiv, parsedMessage);
     aiMood = analyzeMessage(parsedCom);
     changeImage(aiMood);
+    speak(data.jap)
   }else{
     const err = await response.text();
     messageDiv.innerHTML = "Something went wrong.";
