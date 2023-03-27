@@ -5,6 +5,7 @@ import user from './assets/user.svg';
 const form = document.querySelector('form');
 const chatContainer = document.querySelector('#chat_container');
 const img = document.getElementById('yuuna_img');
+const subtitleDiv = document.getElementById('subtitles');
 
 // let validEntry = false;
 
@@ -100,6 +101,10 @@ function changeImage(yuunaMood){
   img.src = './assets/moods/yuuna' + yuunaMood + '.png';
 }
 
+function changeSubtitles(text){
+  subtitleDiv.innerHTML = text;
+}
+
 const handleMessage = async (e) => {
   e.preventDefault();
 
@@ -139,7 +144,7 @@ const handleMessage = async (e) => {
     const parsedMessage = data.bot.trim();
     const parsedCom = data.com;
 
-    console.log(data.jap);
+    changeSubtitles(data.jap);
     typeMessage(messageDiv, parsedMessage);
     aiMood = analyzeMessage(parsedCom);
     changeImage(aiMood);
