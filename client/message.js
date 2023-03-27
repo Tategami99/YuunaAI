@@ -10,10 +10,11 @@ const subtitleDiv = document.getElementById('subtitles');
 // let validEntry = false;
 
 //synthesis stuff
+const synth = window.speechSynthesis;
 const yuunaVoice = new SpeechSynthesisUtterance();
 yuunaVoice.volume = 1; //0 to 1
 yuunaVoice.rate = 1.75; //0.1 to 10
-yuunaVoice.pitch = 2; //0 to 2
+yuunaVoice.pitch = 1.8; //0 to 2
 
 const mood = Object.freeze({
   Ecstatic: 'Ecstatic',
@@ -112,12 +113,16 @@ function changeSubtitles(text){
 }
 
 function speak(text){
-  yuunaVoice.text = text;
-  // const voice = speaks[5];
-  // console.log(`Voice: ${voice.name} and Lang: ${voice.lang}`)
-  yuunaVoice.voiceURI = 'Kyoko';
-  yuunaVoice.lang = 'ja-JP';
-  speechSynthesis.speak(yuunaVoice);
+  //check if speaking
+  if(synth.speaking){
+    console.log('already speaking');
+    return;
+  }else{
+    yuunaVoice.text = text;
+    yuunaVoice.voiceURI = 'Microsoft Sayaka - Japanese (Japan)';
+    yuunaVoice.lang = 'ja-JP';
+    speechSynthesis.speak(yuunaVoice);
+  }
 }
 
 const handleMessage = async (e) => {
