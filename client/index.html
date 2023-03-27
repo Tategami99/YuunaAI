@@ -9,12 +9,17 @@
   </head>
   <body>
     <div id="app"></div>
-      <div id="chat_container"></div>
+      <div id="message_area">
+        <div id="chat_container"></div>
 
-      <form>
-        <textarea name="prompt" rows="1" cols="1" placeholder="Message Yuuna"></textarea>
-        <button type="submit"><img src="assets/send.svg"></button>
-      </form>
+        <form>
+          <textarea name="prompt" rows="1" cols="1" placeholder="Message Yuuna"></textarea>
+          <button type="submit"><img src="assets/send.svg"></button>
+        </form>
+      </div>
+      <div id="image_area">
+        <img id="yuuna_img" src="./assets/moods/yuunaPout.png">
+      </div>
     <script type="module" src="/message.js"></script>
   </body>
 </html>

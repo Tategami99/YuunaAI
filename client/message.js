@@ -5,6 +5,7 @@ import sentiment from 'sentiment';
 //html stuff
 const form = document.querySelector('form');
 const chatContainer = document.querySelector('#chat_container');
+const img = document.getElementById('yuuna_img');
 
 // let validEntry = false;
 
@@ -13,12 +14,12 @@ const initialAIPrompt = 'You are my Japanese girlfriend and I am your boyfriend.
 let aiPrompt = initialAIPrompt;
 
 const mood = Object.freeze({
-  Ecstatic: 5,
-  Happy: 4,
-  Meh: 3,
-  Pout: 2,
-  Sad: 1,
-  Angry: 0
+  Ecstatic: 'Ecstatic',
+  Happy: 'Happy',
+  Meh: 'Meh',
+  Pout: 'Pout',
+  Sad: 'Sad',
+  Angry: 'Angry'
 });
 let aiMood = mood.Meh;
 
@@ -102,15 +103,8 @@ function analyzeMessage(text){
   return moodFromText;
 }
 
-function printValues(obj) {
-  for(var k in obj) {
-      if(obj[k] instanceof Object) {
-          printValues(obj[k]);
-          console.log('instance');
-      } else {
-          console.log(obj[k] + "   works");
-      };
-  }
+function changeImage(yuunaMood){
+  img.src = './assets/moods/yuuna' + yuunaMood + '.png';
 }
 
 const handleMessage = async (e) => {
@@ -153,6 +147,7 @@ const handleMessage = async (e) => {
 
     typeMessage(messageDiv, parsedData);
     aiMood = analyzeMessage(parsedData);
+    changeImage(aiMood);
   }else{
     const err = await response.text();
     messageDiv.innerHTML = "Something went wrong.";
