@@ -22,13 +22,13 @@ body {
 }
 
 #message_area {
-  width: 60%;
+  width: 50%;
   position: relative;
   top: 0;
 }
 
 #image_area {
-  width: 40%;
+  width: 50%;
   position: fixed;
   right: 0;
   top: 0;

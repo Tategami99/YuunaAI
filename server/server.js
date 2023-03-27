@@ -28,10 +28,10 @@ app.get('/', async (req, res) => {
 
 app.post('/', async (req, res) => {
     try {
-        const prompt = req.body.prompt;
+        const prompt = process.env.OPENAI_PROMPT + req.body.prompt;
         const response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: `${prompt}`,
+            prompt: prompt,
             temperature: 1,
             max_tokens: 500,
             top_p: 1,
