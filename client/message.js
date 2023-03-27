@@ -20,6 +20,7 @@ const mood = Object.freeze({
   Sad: 1,
   Angry: 0
 });
+let aiMood = mood.Meh;
 
 let loadInterval;
 
@@ -151,7 +152,7 @@ const handleMessage = async (e) => {
     const parsedData = data.bot.trim();
 
     typeMessage(messageDiv, parsedData);
-    analyzeMessage(parsedData);
+    aiMood = analyzeMessage(parsedData);
   }else{
     const err = await response.text();
     messageDiv.innerHTML = "Something went wrong.";
