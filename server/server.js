@@ -25,12 +25,14 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', async (req, res) => {
+    res.set('Access-Control-Allow-Origin', 'https://yuunacreates.000webhostapp.com/');
     res.status(200).send({
         message: 'Sheeeeeeesh',
     })
 })
 
 app.post('/', async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
     try {
         appendedPrompt += req.body.prompt;
         if(appendedPrompt.length >= 2900){
