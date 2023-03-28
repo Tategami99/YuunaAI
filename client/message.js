@@ -163,7 +163,7 @@ const handleMessage = async (e) => {
   typingMessage(messageDiv);
 
   //fetch data from server
-  const response = await fetch('http://localhost:5000', {
+  const response = await fetch('https://grumpy-crab-culottes.cyclic.app', {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'
