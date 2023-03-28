@@ -7,6 +7,10 @@ import translatte from 'translatte';
 
 dotenv.config();
 
+const maxConversation = 10;
+const initialPrompt = process.env.OPENAI_PROMPT;
+let appendedPrompt = initialPrompt;
+
 //sentiment stuff
 const sentimentObj = new sentiment();
 
@@ -28,7 +32,11 @@ app.get('/', async (req, res) => {
 
 app.post('/', async (req, res) => {
     try {
-        const prompt = process.env.OPENAI_PROMPT + req.body.prompt;
+        appendedPrompt += req.body.prompt;
+        if(appendedPrompt.length >= 2900){
+            appendedPrompt = initialPrompt;
+        }
+        const prompt = appendedPrompt;
         const response = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: prompt,
@@ -39,7 +47,7 @@ app.post('/', async (req, res) => {
             presence_penalty: 0.25,
             stop: ["\''\''\''"],
         });
-        console.log(prompt + "\n" + response.data.choices[0].text);
+        console.log(prompt + response.data.choices[0].text);
         const analysisObj = sentimentObj.analyze(response.data.choices[0].text.trim());
         const translation = await translatte(response.data.choices[0].text.trim(), {to: 'ja'});
         res.status(200).send({

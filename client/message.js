@@ -11,8 +11,6 @@ const chatContainer = document.querySelector('#chat_container');
 const img = document.getElementById('yuuna_img');
 const subtitleDiv = document.getElementById('subtitles');
 
-let userPrompt = "";
-
 //synthesis stuff
 const synth = window.speechSynthesis;
 const yuunaVoice = new SpeechSynthesisUtterance();
@@ -151,9 +149,6 @@ const handleMessage = async (e) => {
 
   const formData = new FormData(form);
   let promptToBot = formData.get('prompt');
-  if(userPrompt !== ""){
-    promptToBot = userPrompt;
-  }
 
   //user's chatstripe
   chatContainer.innerHTML += chatStripe(false, promptToBot);
@@ -196,7 +191,6 @@ const handleMessage = async (e) => {
     messageDiv.innerHTML = "Something went wrong.";
     alert(err);
   }
-  userPrompt = "";
 }
 
 //form listeners
@@ -220,6 +214,5 @@ recognition.onend = function() {
   console.log('speech inactive');
 }
 recognition.onresult = function(event) {
-  userPrompt = event.results[0][0].transcript;
-  textArea.value = userPrompt;
+  textArea.value = event.results[0][0].transcript;
 }
