@@ -196,6 +196,7 @@ const handleMessage = async (e) => {
     messageDiv.innerHTML = "Something went wrong.";
     alert(err);
   }
+  userPrompt = "";
 }
 
 //form listeners
