@@ -1,13 +1,17 @@
 import bot from './assets/yuuna.png';
 import user from './assets/user.svg';
 
+//keyboard stuff
+let voiceListening = false;
+
 //html stuff
 const form = document.querySelector('form');
+const textArea = form.elements['prompt'];
 const chatContainer = document.querySelector('#chat_container');
 const img = document.getElementById('yuuna_img');
 const subtitleDiv = document.getElementById('subtitles');
 
-// let validEntry = false;
+let userPrompt = "";
 
 //synthesis stuff
 const synth = window.speechSynthesis;
@@ -16,6 +20,7 @@ yuunaVoice.volume = 1; //0 to 1
 yuunaVoice.rate = 1.75; //0.1 to 10
 yuunaVoice.pitch = 1.8; //0 to 2
 
+//yuunas mood
 const mood = Object.freeze({
   Ecstatic: 'Ecstatic',
   Happy: 'Happy',
@@ -26,8 +31,14 @@ const mood = Object.freeze({
 });
 let aiMood = mood.Meh;
 
-let loadInterval;
+//speech recognition stuff
+const SpeechRecognition = window.speechRecognition || window.webkitSpeechRecognition;
+const SpeechGrammarList = window.SpeechGrammarList || webkitSpeechGrammarList;
+const recognition = new SpeechRecognition();
+recognition.continuous = false;
 
+//typing stuff
+let loadInterval;
 function typingMessage(element){
   element.textContent = '';
 
@@ -38,7 +49,6 @@ function typingMessage(element){
     }
   }, 300);
 }
-
 function typeMessage(element, text){
   let index = 0;
 
@@ -51,7 +61,6 @@ function typeMessage(element, text){
     }
   }, 20);
 }
-
 function generateUniqueID(){
   const timeStamp = Date.now();
   const randomNumber = Math.random();
@@ -59,7 +68,6 @@ function generateUniqueID(){
 
   return `id-${timeStamp}-${hexadecimalString}`;
 }
-
 function chatStripe(isAI, value, uniqueID){
   return (
     `
@@ -78,6 +86,7 @@ function chatStripe(isAI, value, uniqueID){
   )
 }
 
+//sentiment stuff
 function analyzeMessage(com){
   const roundedComparitiveScore = Math.round(com * 100) / 100;
   let moodFromText = mood.Meh;
@@ -104,14 +113,15 @@ function analyzeMessage(com){
   return moodFromText;
 }
 
+//more mood stuff
 function changeImage(yuunaMood){
   img.src = './assets/moods/yuuna' + yuunaMood + '.png';
 }
 
+//jap stuff
 function changeSubtitles(text){
   subtitleDiv.innerHTML = text;
 }
-
 function speak(text){
   //check if speaking
   if(synth.speaking){
@@ -125,16 +135,28 @@ function speak(text){
   }
 }
 
+//voice recognition stuff
+function toggleVoice(e){
+  voiceListening = !voiceListening;
+  console.log(voiceListening);
+  if(!voiceListening){
+    recognition.stop();
+    return;
+  }
+  recognition.start();
+}
+
 const handleMessage = async (e) => {
   e.preventDefault();
 
-  const data = new FormData(form);
-  // if(data.get('prompt').match(/^\s*$/) === null){
-  //   validEntry = true
-  // }
+  const formData = new FormData(form);
+  let promptToBot = formData.get('prompt');
+  if(userPrompt !== ""){
+    promptToBot = userPrompt;
+  }
 
   //user's chatstripe
-  chatContainer.innerHTML += chatStripe(false, data.get('prompt'));
+  chatContainer.innerHTML += chatStripe(false, promptToBot);
 
   form.reset();
 
@@ -152,7 +174,7 @@ const handleMessage = async (e) => {
       'Content-type': 'application/json'
     },
     body: JSON.stringify({
-      prompt: "\n " + data.get('prompt')
+      prompt: "\n " + promptToBot
     })
   });
 
@@ -176,9 +198,27 @@ const handleMessage = async (e) => {
   }
 }
 
+//form listeners
 form.addEventListener('submit', handleMessage);
 form.addEventListener('keyup', (e) => {
   if(e.keyCode === 13){
     handleMessage(e);
   }
+  else if(e.keyCode === 39){
+    toggleVoice(e);
+  }
 });
+
+//speech listeners
+recognition.onstart = function() {
+  form.focus();
+  console.log('speech active');
+}
+recognition.onend = function() {
+  form.focus();
+  console.log('speech inactive');
+}
+recognition.onresult = function(event) {
+  userPrompt = event.results[0][0].transcript;
+  textArea.value = userPrompt;
+}
