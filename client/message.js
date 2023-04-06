@@ -198,6 +198,9 @@ const handleMessage = async (e) => {
 form.addEventListener('submit', handleMessage);
 form.addEventListener('keyup', (e) => {
   if(e.keyCode === 13){
+    if(synth.speaking){
+      return;
+    }
     handleMessage(e);
   }
   else if(e.keyCode === 39){
