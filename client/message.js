@@ -130,6 +130,7 @@ function speak(text){
     yuunaVoice.voiceURI = 'Microsoft Sayaka - Japanese (Japan)';
     yuunaVoice.lang = 'ja-JP';
     speechSynthesis.speak(yuunaVoice);
+    console.log('rate: ' + yuunaVoice.rate);
   }
 }
 
@@ -163,7 +164,7 @@ const handleMessage = async (e) => {
   typingMessage(messageDiv);
 
   //fetch data from server
-  const response = await fetch('https://grumpy-crab-culottes.cyclic.app', {
+  const response = await fetch('http://localhost:5000', {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'
@@ -201,6 +202,20 @@ form.addEventListener('keyup', (e) => {
   }
   else if(e.keyCode === 39){
     toggleVoice(e);
+  }
+  else if(e.keyCode === 190){
+    if(yuunaVoice.rate + 0.25 > 2){
+      yuunaVoice.rate = 2;
+    }else{
+      yuunaVoice.rate += 0.25;
+    }
+  }
+  else if(e.keyCode === 188){
+    if(yuunaVoice.rate - 0.25 < 0.25){
+      yuunaVoice.rate = 0.25;
+    }else{
+      yuunaVoice.rate -= 0.25;
+    }
   }
 });
 
